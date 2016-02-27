@@ -8,27 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class NewsAdapter extends BaseAdapter implements OnScrollListener{
+public class NewsAdapter extends BaseAdapter{
 
 	private List<NewsBean> mList;
 	private LayoutInflater mInflater;
 	private ImageLoader mImageLoader;
-	private int mStart,mEnd;
-	public static String[] URLS;
 	
 	public NewsAdapter(Context context, List<NewsBean> data) {
 		mList = data;
 		mInflater = LayoutInflater.from(context);
-		mImageLoader = new ImageLoader(null);
-		URLS = new String[data.size()];
-		for(int i = 0 ; i < data.size(); i++){
-			URLS[i] = data.get(i).newsIconUrl;
-		}
+		mImageLoader = new ImageLoader();
 	}
 	
 	@Override
@@ -62,7 +55,7 @@ public class NewsAdapter extends BaseAdapter implements OnScrollListener{
 		viewHolder.ivIcon.setImageResource(R.drawable.ic_launcher);
 		String url = mList.get(position).newsIconUrl;
 		viewHolder.ivIcon.setTag(url);
-//		new ImageLoader().showImageByThread(viewHolder.ivIcon, url);
+//		new BitmapLoader().showImageByThread(viewHolder.ivIcon, url);
 		mImageLoader.showImageByAsyncTask(viewHolder.ivIcon, url);
 		viewHolder.tvTitle.setText(mList.get(position).newsTitle);
 		viewHolder.tvContent.setText(mList.get(position).newsContent);
@@ -73,22 +66,4 @@ public class NewsAdapter extends BaseAdapter implements OnScrollListener{
 		public TextView tvTitle, tvContent;
 		public ImageView ivIcon;
 	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		if(scrollState == SCROLL_STATE_IDLE){
-//			加载可见项
-			mImageLoader.loadImage(mStart, mEnd);
-		}else{
-//			停止任务
-			mImageLoader.cancelAllTasks();
-		}
-	}
-
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-		mStart = firstVisibleItem;
-		mEnd = firstVisibleItem + visibleItemCount;
-	}
-	
 }
